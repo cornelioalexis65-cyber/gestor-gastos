@@ -1,7 +1,6 @@
 import { db } from './connection.js'
 
 const migrations = [
-  // 001_initial_schema
   `CREATE TABLE IF NOT EXISTS categorias (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nombre TEXT NOT NULL UNIQUE,
@@ -60,7 +59,6 @@ const migrations = [
     FOREIGN KEY (tarjeta_id) REFERENCES tarjetas(id) ON DELETE CASCADE
   )`,
 
-  // 002_indexes
   `CREATE INDEX IF NOT EXISTS idx_ingresos_fecha ON ingresos(fecha)`,
   `CREATE INDEX IF NOT EXISTS idx_ingresos_categoria ON ingresos(categoria_id)`,
   `CREATE INDEX IF NOT EXISTS idx_gastos_fecha ON gastos(fecha)`,
@@ -69,7 +67,6 @@ const migrations = [
   `CREATE INDEX IF NOT EXISTS idx_pagos_tarjeta_fecha ON pagos_tarjeta(fecha)`,
   `CREATE INDEX IF NOT EXISTS idx_pagos_tarjeta_tarjeta ON pagos_tarjeta(tarjeta_id)`,
 
-  // Triggers for updated_at
   `CREATE TRIGGER IF NOT EXISTS update_categorias_timestamp
    AFTER UPDATE ON categorias
    BEGIN
@@ -125,7 +122,7 @@ export async function rollbackMigrations(): Promise<void> {
 
 // Run if called directly
 if (import.meta.url === `file://${process.argv[1]}`) {
+  console.log('Running migrations directly...')
   await runMigrations()
   process.exit(0)
 }
-
