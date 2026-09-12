@@ -3,11 +3,13 @@ import { Plus, Edit, Trash2, Loader2 } from 'lucide-react'
 import { Modal } from '@/components/Modal'
 import { CategoryForm } from '@/components/CategoryForm'
 import { useCategorias } from '@/hooks/useCategorias'
+import { useToast } from '@/contexts/useToast'
 import type { Categoria, CategoriaCreate } from '@/types'
 import type { CategoriaFormData } from '@/components/CategoryForm'
 
 export function Categorias() {
   const { categorias, loading, error, create, update, remove, refetch } = useCategorias()
+  const { showToast } = useToast()
   const [modalOpen, setModalOpen] = useState(false)
   const [editingCategoria, setEditingCategoria] = useState<Categoria | null>(null)
   const [deletingId, setDeletingId] = useState<number | null>(null)
@@ -18,11 +20,15 @@ export function Categorias() {
     try {
       if (editingCategoria) {
         await update(editingCategoria.id, data)
+        showToast('success', 'Categoría actualizada correctamente')
       } else {
         await create(data as CategoriaCreate)
+        showToast('success', 'Categoría creada correctamente')
       }
       setModalOpen(false)
       setEditingCategoria(null)
+    } catch {
+      showToast('error', 'Error al guardar la categoría')
     } finally {
       setSubmitLoading(false)
     }
@@ -37,7 +43,10 @@ export function Categorias() {
     setSubmitLoading(true)
     try {
       await remove(deletingId)
+      showToast('success', 'Categoría eliminada correctamente')
       setDeletingId(null)
+    } catch {
+      showToast('error', 'Error al eliminar la categoría')
     } finally {
       setSubmitLoading(false)
     }

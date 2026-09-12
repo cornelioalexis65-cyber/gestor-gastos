@@ -5,11 +5,13 @@ import { Modal } from '@/components/Modal'
 import { IngresoForm } from '@/components/IngresoForm'
 import { useIngresos } from '@/hooks/useIngresos'
 import { useCategorias } from '@/hooks/useCategorias'
+import { useToast } from '@/contexts/useToast'
 import type { Ingreso } from '@/types'
 
 export function Ingresos() {
   const { ingresos, loading, error, pagination, filters, setFilters, create, update, remove, refetch, goToPage } = useIngresos()
   const { categorias: allCategorias, loading: catLoading } = useCategorias()
+  const { showToast } = useToast()
 
   const [modalOpen, setModalOpen] = useState(false)
   const [editingIngreso, setEditingIngreso] = useState<Ingreso | null>(null)
@@ -21,11 +23,15 @@ export function Ingresos() {
     try {
       if (editingIngreso) {
         await update(editingIngreso.id, data)
+        showToast('success', 'Ingreso actualizado correctamente')
       } else {
         await create(data)
+        showToast('success', 'Ingreso creado correctamente')
       }
       setModalOpen(false)
       setEditingIngreso(null)
+    } catch {
+      showToast('error', 'Error al guardar el ingreso')
     } finally {
       setSubmitLoading(false)
     }
@@ -40,7 +46,10 @@ export function Ingresos() {
     setSubmitLoading(true)
     try {
       await remove(deletingId)
+      showToast('success', 'Ingreso eliminado correctamente')
       setDeletingId(null)
+    } catch {
+      showToast('error', 'Error al eliminar el ingreso')
     } finally {
       setSubmitLoading(false)
     }

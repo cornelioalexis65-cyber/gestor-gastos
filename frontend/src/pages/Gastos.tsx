@@ -6,11 +6,13 @@ import { GastoForm } from '@/components/GastoForm'
 import { useGastos } from '@/hooks/useGastos'
 import { useCategorias } from '@/hooks/useCategorias'
 import { tarjetasService } from '@/services/tarjetas'
+import { useToast } from '@/contexts/useToast'
 import type { Gasto, Tarjeta } from '@/types'
 
 export function Gastos() {
   const { gastos, loading, error, pagination, filters, setFilters, create, update, remove, refetch, goToPage } = useGastos()
   const { categorias: allCategorias, loading: catLoading } = useCategorias()
+  const { showToast } = useToast()
 
   const [modalOpen, setModalOpen] = useState(false)
   const [editingGasto, setEditingGasto] = useState<Gasto | null>(null)
@@ -37,11 +39,15 @@ export function Gastos() {
     try {
       if (editingGasto) {
         await update(editingGasto.id, data)
+        showToast('success', 'Gasto actualizado correctamente')
       } else {
         await create(data)
+        showToast('success', 'Gasto creado correctamente')
       }
       setModalOpen(false)
       setEditingGasto(null)
+    } catch {
+      showToast('error', 'Error al guardar el gasto')
     } finally {
       setSubmitLoading(false)
     }
@@ -56,7 +62,10 @@ export function Gastos() {
     setSubmitLoading(true)
     try {
       await remove(deletingId)
+      showToast('success', 'Gasto eliminado correctamente')
       setDeletingId(null)
+    } catch {
+      showToast('error', 'Error al eliminar el gasto')
     } finally {
       setSubmitLoading(false)
     }

@@ -5,10 +5,12 @@ import { Modal } from '@/components/Modal'
 import { TarjetaForm } from '@/components/TarjetaForm'
 import { useTarjetas } from '@/hooks/useTarjetas'
 import { tarjetasService } from '@/services/tarjetas'
+import { useToast } from '@/contexts/useToast'
 import type { Tarjeta, PagoTarjeta } from '@/types'
 
 export function Tarjetas() {
   const { tarjetas, loading, error, pagination, create, update, remove, refetch, goToPage } = useTarjetas()
+  const { showToast } = useToast()
 
   const [modalOpen, setModalOpen] = useState(false)
   const [editingTarjeta, setEditingTarjeta] = useState<Tarjeta | null>(null)
@@ -24,11 +26,15 @@ export function Tarjetas() {
     try {
       if (editingTarjeta) {
         await update(editingTarjeta.id, data)
+        showToast('success', 'Tarjeta actualizada correctamente')
       } else {
         await create(data)
+        showToast('success', 'Tarjeta creada correctamente')
       }
       setModalOpen(false)
       setEditingTarjeta(null)
+    } catch {
+      showToast('error', 'Error al guardar la tarjeta')
     } finally {
       setSubmitLoading(false)
     }
@@ -43,7 +49,10 @@ export function Tarjetas() {
     setSubmitLoading(true)
     try {
       await remove(deletingId)
+      showToast('success', 'Tarjeta eliminada correctamente')
       setDeletingId(null)
+    } catch {
+      showToast('error', 'Error al eliminar la tarjeta')
     } finally {
       setSubmitLoading(false)
     }
@@ -363,6 +372,7 @@ function PagoForm({
   const [monto, setMonto] = useState('')
   const [descripcion, setDescripcion] = useState('')
   const [error, setError] = useState('')
+  const { showToast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -378,6 +388,7 @@ function PagoForm({
     setError('')
     try {
       await onSubmit({ fecha, monto: montoNum, descripcion: descripcion || undefined })
+      showToast('success', 'Pago registrado correctamente')
       setFecha(format(new Date(), 'yyyy-MM-dd'))
       setMonto('')
       setDescripcion('')
