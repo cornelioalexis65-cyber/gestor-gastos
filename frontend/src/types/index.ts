@@ -115,6 +115,12 @@ export interface DashboardSummary {
   gastosRecientes: Gasto[]
 }
 
+export interface DashboardStats {
+  gastosPorCategoria: Array<{ nombre: string; color: string; icono: string; total: number }>
+  ingresosPorCategoria: Array<{ nombre: string; color: string; icono: string; total: number }>
+  balanceMensual: Array<{ mes: string; ingresos: number; gastos: number }>
+}
+
 export interface PaginatedResponse<T> {
   data: T[]
   pagination: {
