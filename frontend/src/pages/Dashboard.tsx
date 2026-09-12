@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { format } from 'date-fns'
-import { Loader2, Calendar, TrendingUp, TrendingDown } from 'lucide-react'
+import { Loader2, Calendar } from 'lucide-react'
 import { useDashboard } from '@/hooks/useDashboard'
+import { CategoryBarChart, BalanceLineChart, CategoryPieChart } from '@/components/charts'
 import type { Ingreso, Gasto } from '@/types'
 
 export function Dashboard() {
@@ -71,15 +72,6 @@ export function Dashboard() {
       currency: 'USD',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(value)
-  }
-
-  const formatCurrencyCompact = (value: number) => {
-    return new Intl.NumberFormat('es-ES', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
     }).format(value)
   }
 
@@ -284,118 +276,76 @@ export function Dashboard() {
       </div>
 
       {stats && (stats.gastosPorCategoria.length > 0 || stats.ingresosPorCategoria.length > 0) && (
-        <div className="grid gap-4 lg:grid-cols-2">
+        <>
           {stats.gastosPorCategoria.length > 0 && (
-            <div className="card">
-              <div className="card-header">
-                <h2 className="text-lg font-semibold">Gastos por Categoría</h2>
+            <div className="grid gap-4 lg:grid-cols-2">
+              <div className="card">
+                <div className="card-header">
+                  <h2 className="text-lg font-semibold">Gastos por Categoría</h2>
+                </div>
+                <div className="card-body">
+                  <CategoryBarChart
+                    data={stats.gastosPorCategoria.slice(0, 8).map(c => ({ nombre: c.nombre, total: c.total, color: c.color }))}
+                    color="#ef4444"
+                  />
+                </div>
               </div>
-              <div className="card-body">
-                <div className="space-y-3">
-                  {stats.gastosPorCategoria.slice(0, 6).map((cat: { nombre: string; color: string; icono: string; total: number }) => {
-                    const total = gastos
-                    const percentage = total > 0 ? (cat.total / total) * 100 : 0
-                    return (
-                      <div key={cat.nombre} className="space-y-1">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="flex items-center gap-2">
-                            <span
-                              className="w-3 h-3 rounded"
-                              style={{ backgroundColor: cat.color }}
-                            />
-                            {cat.nombre}
-                          </span>
-                          <span className="font-mono text-[var(--color-danger)]">
-                            -{formatCurrencyCompact(cat.total)}
-                          </span>
-                        </div>
-                        <div className="h-1.5 bg-[var(--color-border)] rounded-full overflow-hidden">
-                          <div
-                            className="h-full rounded-full"
-                            style={{
-                              width: `${percentage}%`,
-                              backgroundColor: cat.color,
-                            }}
-                          />
-                        </div>
-                      </div>
-                    )
-                  })}
+              <div className="card">
+                <div className="card-header">
+                  <h2 className="text-lg font-semibold">Distribución de Gastos</h2>
+                </div>
+                <div className="card-body">
+                  <CategoryPieChart
+                    data={stats.gastosPorCategoria.slice(0, 8).map(c => ({ nombre: c.nombre, total: c.total, color: c.color }))}
+                    title="Gastos"
+                  />
                 </div>
               </div>
             </div>
           )}
 
           {stats.ingresosPorCategoria.length > 0 && (
-            <div className="card">
-              <div className="card-header">
-                <h2 className="text-lg font-semibold">Ingresos por Categoría</h2>
+            <div className="grid gap-4 lg:grid-cols-2">
+              <div className="card">
+                <div className="card-header">
+                  <h2 className="text-lg font-semibold">Ingresos por Categoría</h2>
+                </div>
+                <div className="card-body">
+                  <CategoryBarChart
+                    data={stats.ingresosPorCategoria.slice(0, 8).map(c => ({ nombre: c.nombre, total: c.total, color: c.color }))}
+                    color="#10b981"
+                  />
+                </div>
               </div>
-              <div className="card-body">
-                <div className="space-y-3">
-                  {stats.ingresosPorCategoria.slice(0, 6).map((cat: { nombre: string; color: string; icono: string; total: number }) => {
-                    const total = ingresos
-                    const percentage = total > 0 ? (cat.total / total) * 100 : 0
-                    return (
-                      <div key={cat.nombre} className="space-y-1">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="flex items-center gap-2">
-                            <span
-                              className="w-3 h-3 rounded"
-                              style={{ backgroundColor: cat.color }}
-                            />
-                            {cat.nombre}
-                          </span>
-                          <span className="font-mono text-[var(--color-success)]">
-                            +{formatCurrencyCompact(cat.total)}
-                          </span>
-                        </div>
-                        <div className="h-1.5 bg-[var(--color-border)] rounded-full overflow-hidden">
-                          <div
-                            className="h-full rounded-full"
-                            style={{
-                              width: `${percentage}%`,
-                              backgroundColor: cat.color,
-                            }}
-                          />
-                        </div>
-                      </div>
-                    )
-                  })}
+              <div className="card">
+                <div className="card-header">
+                  <h2 className="text-lg font-semibold">Distribución de Ingresos</h2>
+                </div>
+                <div className="card-body">
+                  <CategoryPieChart
+                    data={stats.ingresosPorCategoria.slice(0, 8).map(c => ({ nombre: c.nombre, total: c.total, color: c.color }))}
+                    title="Ingresos"
+                  />
                 </div>
               </div>
             </div>
           )}
-        </div>
+
+          {stats && stats.balanceMensual.length > 0 && (
+            <div className="card">
+              <div className="card-header">
+                <h2 className="text-lg font-semibold">Balance Mensual (Últimos 12 meses)</h2>
+              </div>
+              <div className="card-body">
+                <BalanceLineChart
+                  data={stats.balanceMensual.map(m => ({ mes: m.mes, ingresos: m.ingresos, gastos: m.gastos, balance: m.ingresos - m.gastos }))}
+                />
+              </div>
+            </div>
+          )}
+        </>
       )}
 
-      {stats && stats.balanceMensual.length > 0 && (
-        <div className="card">
-          <div className="card-header">
-            <h2 className="text-lg font-semibold">Balance Mensual (Últimos 12 meses)</h2>
-          </div>
-          <div className="card-body">
-            <div className="space-y-3">
-              {stats.balanceMensual.slice(-6).map((mes: { mes: string; ingresos: number; gastos: number }) => (
-                <div key={mes.mes} className="flex items-center justify-between py-2 border-b border-[var(--color-border)] last:border-0">
-                  <span className="font-medium">{format(new Date(mes.mes + '-01'), 'MMM yyyy')}</span>
-                  <div className="flex items-center gap-4 text-sm">
-                    <span className="flex items-center gap-1 text-[var(--color-success)]">
-                      <TrendingUp size={14} /> {formatCurrencyCompact(mes.ingresos)}
-                    </span>
-                    <span className="flex items-center gap-1 text-[var(--color-danger)]">
-                      <TrendingDown size={14} /> {formatCurrencyCompact(mes.gastos)}
-                    </span>
-                    <span className={`font-mono font-medium ${(mes.ingresos - mes.gastos) >= 0 ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'}`}>
-                      {(mes.ingresos - mes.gastos) >= 0 ? '+' : ''}{formatCurrencyCompact(mes.ingresos - mes.gastos)}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
