@@ -1,12 +1,12 @@
 import { Routes, Route } from 'react-router-dom'
-import { Layout } from '@/components/Layout'
-import { Dashboard } from '@/pages/Dashboard'
-import { Ingresos } from '@/pages/Ingresos'
-import { Gastos } from '@/pages/Gastos'
-import { Categorias } from '@/pages/Categorias'
-import { Tarjetas } from '@/pages/Tarjetas'
-import { Reportes } from '@/pages/Reportes'
-import { Configuracion } from '@/pages/Configuracion'
+import { Layout } from '@/shared/components/layout/Layout'
+import { Dashboard } from '@/features/dashboard/Dashboard'
+import { Ingresos } from '@/features/ingresos/Ingresos'
+import { Gastos } from '@/features/gastos/Gastos'
+import { Categorias } from '@/features/categorias/Categorias'
+import { Tarjetas } from '@/features/tarjetas/Tarjetas'
+import { Reportes } from '@/features/reportes/Reportes'
+import { Configuracion } from '@/features/configuracion/Configuracion'
 
 function App() {
   return (

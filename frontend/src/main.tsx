@@ -1,9 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import { ToastProvider } from '@/contexts/ToastContext'
+import { ToastProvider } from '@/shared/contexts/ToastContext'
 import App from './App'
-import './styles/index.css'
+import './shared/styles/index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
