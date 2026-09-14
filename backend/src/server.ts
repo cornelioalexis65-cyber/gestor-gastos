@@ -16,6 +16,11 @@ import { pagosRoutes } from './routes/pagos.js'
 
 const app = express()
 
+// Honor X-Forwarded-For from the reverse proxy so rate limiting uses the real client IP
+if (env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1)
+}
+
 // Security middleware
 app.use(helmet({
   contentSecurityPolicy: {
@@ -97,10 +102,17 @@ app.use(errorHandler)
 
 const PORT = env.PORT
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`)
-  console.log(`📊 Environment: ${env.NODE_ENV}`)
-})
+// On Vercel this file is consumed as a serverless function, so it must NOT
+// open its own listening socket (Vercel sets VERCEL=1 in that environment).
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`)
+    console.log(`📊 Environment: ${env.NODE_ENV}`)
+  })
+} else {
+  // Trust the Vercel proxy so rate limiting and req.ip see the real client
+  app.set('trust proxy', 1)
+}
 
 export default app
 
