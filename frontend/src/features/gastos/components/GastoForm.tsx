@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { format } from 'date-fns'
+import { formatCurrency } from '@/shared/utils/format'
 import type { Categoria, Tarjeta } from '@/shared/types'
 
 const gastoSchema = z.object({
@@ -159,7 +160,7 @@ export function GastoForm({ initialData, categorias, tarjetas, onSubmit, onClose
             <option value="">Seleccionar tarjeta</option>
             {tarjetasActivas.map(tarjeta => (
               <option key={tarjeta.id} value={tarjeta.id} style={{ color: tarjeta.color }}>
-                {tarjeta.nombre} (Disponible: ${Number(tarjeta.disponible).toLocaleString('es-ES', { minimumFractionDigits: 2 })})
+                {tarjeta.nombre} (Disponible: {formatCurrency(tarjeta.disponible)})
               </option>
             ))}
           </select>

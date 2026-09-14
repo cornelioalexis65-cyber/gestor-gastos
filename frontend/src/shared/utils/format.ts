@@ -1,15 +1,18 @@
 import { format } from 'date-fns'
 
-const currencyFormatter = new Intl.NumberFormat('es-ES', {
+const currency = 'MXN'
+const locale = 'es-MX'
+
+const currencyFormatter = new Intl.NumberFormat(locale, {
   style: 'currency',
-  currency: 'USD',
+  currency,
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
 })
 
-const currencyFormatterCompact = new Intl.NumberFormat('es-ES', {
+const currencyFormatterCompact = new Intl.NumberFormat(locale, {
   style: 'currency',
-  currency: 'USD',
+  currency,
   minimumFractionDigits: 0,
   maximumFractionDigits: 0,
 })
@@ -38,7 +41,7 @@ export function formatDate(isoDate: string): string {
 export function formatMonthYearLabel(mes: string): string {
   const [year, month] = mes.split('-')
   const date = new Date(Number(year), Number(month) - 1)
-  return date.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
+  return date.toLocaleDateString(locale, { month: 'short', year: '2-digit' })
 }
 
 export function formatDateInput(isoDate: string): string {

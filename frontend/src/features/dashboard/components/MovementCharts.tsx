@@ -30,13 +30,12 @@ export function MovementCharts({ stats }: MovementChartsProps) {
           <ChartCard title="Gastos por Categoría">
             <CategoryBarChart
               data={stats.gastosPorCategoria.slice(0, 8).map(c => ({ nombre: c.nombre, total: c.total, color: c.color }))}
-              color="#6384f3"
+              color="#6366f1"
             />
           </ChartCard>
           <ChartCard title="Distribución de Gastos">
             <CategoryPieChart
               data={stats.gastosPorCategoria.slice(0, 8).map(c => ({ nombre: c.nombre, total: c.total, color: c.color }))}
-              title="Gastos"
             />
           </ChartCard>
         </div>
@@ -53,7 +52,6 @@ export function MovementCharts({ stats }: MovementChartsProps) {
           <ChartCard title="Distribución de Ingresos">
             <CategoryPieChart
               data={stats.ingresosPorCategoria.slice(0, 8).map(c => ({ nombre: c.nombre, total: c.total, color: c.color }))}
-              title="Ingresos"
             />
           </ChartCard>
         </div>

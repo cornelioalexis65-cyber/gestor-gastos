@@ -1,10 +1,9 @@
+import { PageHeader } from '@/shared/components/PageHeader'
+
 export function Configuracion() {
   return (
-    <div className="space-y-6 max-w-2xl">
-      <div>
-        <h1 className="text-2xl font-bold">Configuración</h1>
-        <p className="text-[var(--color-text-secondary)] mt-1">Preferencias de la aplicación</p>
-      </div>
+    <div className="space-y-6">
+      <PageHeader title="Configuración" subtitle="Preferencias de la aplicación" />
 
       <div className="card">
         <div className="card-body">
@@ -12,19 +11,11 @@ export function Configuracion() {
           <div className="space-y-4">
             <div>
               <label className="label">Moneda</label>
-              <select className="input">
-                <option>USD ($)</option>
-                <option>EUR (€)</option>
-                <option>MXN ($)</option>
-              </select>
+              <p className="text-[var(--color-text-secondary)]">Peso mexicano (MXN $)</p>
             </div>
             <div>
               <label className="label">Formato de fecha</label>
-              <select className="input">
-                <option>DD/MM/YYYY</option>
-                <option>MM/DD/YYYY</option>
-                <option>YYYY-MM-DD</option>
-              </select>
+              <p className="text-[var(--color-text-secondary)]">DD/MM/AAAA</p>
             </div>
           </div>
         </div>

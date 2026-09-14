@@ -1,4 +1,5 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import { formatCurrency, formatCurrencyCompact } from '@/shared/utils/format'
 
 interface CategoryBarChartProps {
   data: Array<{ nombre: string; total: number; color: string }>
@@ -17,16 +18,14 @@ export function CategoryBarChart({ data, color = '#6366f1' }: CategoryBarChartPr
   return (
     <div className="h-64">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} layout="vertical">
+        <BarChart data={data} layout="vertical" margin={{ left: 0, right: 24 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-          <XAxis type="number" tickFormatter={v => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(v)} />
+          <XAxis type="number" tickFormatter={value => formatCurrencyCompact(Number(value))} tick={{ fontSize: 11 }} />
           <YAxis type="category" dataKey="nombre" width={120} tick={{ fontSize: 12 }} />
           <Tooltip
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             formatter={(value: any) => [
-              typeof value === 'number'
-                ? new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'USD' }).format(value)
-                : '$0',
+              typeof value === 'number' ? formatCurrency(value) : '$0',
               'Monto',
             ]}
           />

@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { formatCurrency } from '@/shared/utils/format'
 
 const tarjetaSchema = z.object({
   nombre: z.string().min(1, 'El nombre es requerido').max(100),
@@ -133,7 +134,7 @@ export function TarjetaForm({ initialData, onSubmit, onClose, isLoading }: Tarje
         <div className="flex items-center justify-between text-sm">
           <span className="text-[var(--color-text-secondary)]">Límite:</span>
           <span className="font-mono font-medium">
-            {Number(watch('limite_credito') || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {formatCurrency(watch('limite_credito') || 0)}
           </span>
         </div>
         <div className="flex items-center justify-between text-sm mt-1">

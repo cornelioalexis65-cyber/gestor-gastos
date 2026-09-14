@@ -1,7 +1,11 @@
 import { useState } from 'react'
-import { Plus, Edit, Trash2, Loader2, ChevronLeft, ChevronRight, CreditCard, ArrowUpRight } from 'lucide-react'
+import { Plus, Edit, Trash2, Loader2, CreditCard, ArrowUpRight } from 'lucide-react'
 import { format } from 'date-fns'
 import { Modal } from '@/shared/components/Modal'
+import { PageHeader } from '@/shared/components/PageHeader'
+import { EmptyState } from '@/shared/components/EmptyState'
+import { Pagination } from '@/shared/components/Pagination'
+import { formatCurrency, formatDate } from '@/shared/utils/format'
 import { TarjetaForm } from './components/TarjetaForm'
 import { useTarjetas } from './hooks/useTarjetas'
 import { tarjetasService } from './services/tarjetas'
@@ -128,24 +132,28 @@ export function Tarjetas() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">Tarjetas de Crédito</h1>
-          <p className="text-[var(--color-text-secondary)] mt-1">Administra tus tarjetas</p>
-        </div>
-        <button className="btn btn-primary" onClick={openCreateModal}>
-          <Plus size={18} /> Nueva Tarjeta
-        </button>
-      </div>
+      <PageHeader
+        title="Tarjetas de Crédito"
+        subtitle="Administra tus tarjetas"
+        actions={
+          <button className="btn btn-primary" onClick={openCreateModal}>
+            <Plus size={18} /> Nueva Tarjeta
+          </button>
+        }
+      />
 
       {tarjetas.length === 0 ? (
         <div className="card">
-          <div className="card-body text-center py-16">
-            <CreditCard className="mx-auto text-[var(--color-text-muted)] mb-4" size={48} />
-            <p className="text-[var(--color-text-muted)] mb-4">No hay tarjetas registradas</p>
-            <button className="btn btn-primary" onClick={openCreateModal}>
-              <Plus size={18} /> Crear la primera
-            </button>
+          <div className="card-body">
+            <EmptyState
+              icon={CreditCard}
+              message="No hay tarjetas registradas"
+              action={
+                <button className="btn btn-primary" onClick={openCreateModal}>
+                  <Plus size={18} /> Crear la primera
+                </button>
+              }
+            />
           </div>
         </div>
       ) : (
@@ -176,19 +184,19 @@ export function Tarjetas() {
                   <div className="flex items-center justify-between">
                     <span className="text-[var(--color-text-secondary)]">Límite</span>
                     <span className="font-mono font-medium">
-                      ${Number(tarjeta.limite_credito).toLocaleString('es-ES', { minimumFractionDigits: 2 })}
+                      {formatCurrency(tarjeta.limite_credito)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-[var(--color-text-secondary)]">Usado</span>
                     <span className="font-mono font-medium text-[var(--color-danger)]">
-                      -${Number(tarjeta.saldo_actual).toLocaleString('es-ES', { minimumFractionDigits: 2 })}
+                      -{formatCurrency(tarjeta.saldo_actual)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between pt-2 border-t border-[var(--color-border)]">
                     <span className="font-medium">Disponible</span>
                     <span className="font-mono font-medium text-[var(--color-success)] text-lg">
-                      ${Number(tarjeta.disponible).toLocaleString('es-ES', { minimumFractionDigits: 2 })}
+                      {formatCurrency(tarjeta.disponible)}
                     </span>
                   </div>
                 </div>
@@ -228,31 +236,14 @@ export function Tarjetas() {
             </div>
           ))}
 
-          {pagination.totalPages > 1 && (
-            <div className="col-span-full flex items-center justify-between p-4 border-t border-[var(--color-border)]">
-              <p className="text-sm text-[var(--color-text-secondary)]">
-                Página {pagination.page} de {pagination.totalPages} ({pagination.total} total)
-              </p>
-              <div className="flex items-center gap-2">
-                <button
-                  className="btn btn-ghost btn-sm p-1.5"
-                  onClick={() => goToPage(pagination.page - 1)}
-                  disabled={pagination.page === 1}
-                  aria-label="Página anterior"
-                >
-                  <ChevronLeft size={16} />
-                </button>
-                <button
-                  className="btn btn-ghost btn-sm p-1.5"
-                  onClick={() => goToPage(pagination.page + 1)}
-                  disabled={pagination.page === pagination.totalPages}
-                  aria-label="Página siguiente"
-                >
-                  <ChevronRight size={16} />
-                </button>
-              </div>
-            </div>
-          )}
+          <div className="col-span-full">
+            <Pagination
+              page={pagination.page}
+              totalPages={pagination.totalPages}
+              total={pagination.total}
+              onPageChange={goToPage}
+            />
+          </div>
         </div>
       )}
 
@@ -339,10 +330,10 @@ export function Tarjetas() {
                   <tbody>
                     {pagos.map(pago => (
                       <tr key={pago.id}>
-                        <td className="font-mono text-sm">{format(new Date(pago.fecha), 'dd/MM/yyyy')}</td>
+                        <td className="font-mono text-sm">{formatDate(pago.fecha)}</td>
                         <td>{pago.descripcion || '—'}</td>
                         <td className="text-right font-mono text-[var(--color-success)]">
-                          ${Number(pago.monto).toLocaleString('es-ES', { minimumFractionDigits: 2 })}
+                          {formatCurrency(pago.monto)}
                         </td>
                       </tr>
                     ))}
@@ -382,7 +373,7 @@ function PagoForm({
       return
     }
     if (montoNum > tarjeta.saldo_actual) {
-      setError(`El pago no puede ser mayor al saldo actual ($${Number(tarjeta.saldo_actual).toLocaleString('es-ES', { minimumFractionDigits: 2 })})`)
+      setError(`El pago no puede ser mayor al saldo actual (${formatCurrency(tarjeta.saldo_actual)})`)
       return
     }
     setError('')

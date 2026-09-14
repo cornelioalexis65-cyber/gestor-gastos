@@ -1,4 +1,5 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import { formatCurrency, formatCurrencyCompact, formatMonthYearLabel } from '@/shared/utils/format'
 
 interface BalanceLineChartProps {
   data: Array<{ mes: string; ingresos: number; gastos: number; balance: number }>
@@ -13,14 +14,8 @@ export function BalanceLineChart({ data }: BalanceLineChartProps) {
     )
   }
 
-  const formatMes = (mes: string) => {
-    const [year, month] = mes.split('-')
-    const date = new Date(Number(year), Number(month) - 1)
-    return date.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
-  }
-
   const chartData = data.map(d => ({
-    mes: formatMes(d.mes),
+    mes: formatMonthYearLabel(d.mes),
     ingresos: d.ingresos,
     gastos: d.gastos,
     balance: d.balance,
@@ -33,7 +28,7 @@ export function BalanceLineChart({ data }: BalanceLineChartProps) {
           <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
           <XAxis dataKey="mes" tick={{ fontSize: 12 }} />
           <YAxis
-            tickFormatter={v => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(v)}
+            tickFormatter={value => formatCurrencyCompact(Number(value))}
             tick={{ fontSize: 12 }}
           />
           <Tooltip
@@ -41,9 +36,7 @@ export function BalanceLineChart({ data }: BalanceLineChartProps) {
             labelFormatter={(label: any) => String(label)}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             formatter={(value: any, name: any) => [
-              typeof value === 'number'
-                ? new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'USD' }).format(value)
-                : '$0',
+              typeof value === 'number' ? formatCurrency(value) : '$0',
               name === 'ingresos' ? 'Ingresos' : name === 'gastos' ? 'Gastos' : 'Balance',
             ]}
           />

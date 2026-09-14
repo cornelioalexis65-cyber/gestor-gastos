@@ -1,10 +1,9 @@
+import { PageHeader } from '@/shared/components/PageHeader'
+
 export function Reportes() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Reportes</h1>
-        <p className="text-[var(--color-text-secondary)] mt-1">Estadísticas y análisis financieros</p>
-      </div>
+      <PageHeader title="Reportes" subtitle="Estadísticas y análisis financieros" />
 
       <div className="card">
         <div className="card-body text-center py-12">

@@ -1,6 +1,8 @@
 import { useState } from 'react'
-import { Plus, Edit, Trash2, Loader2 } from 'lucide-react'
+import { Plus, Edit, Trash2, Loader2, FolderOpen } from 'lucide-react'
 import { Modal } from '@/shared/components/Modal'
+import { PageHeader } from '@/shared/components/PageHeader'
+import { EmptyState } from '@/shared/components/EmptyState'
 import { CategoryForm } from './components/CategoryForm'
 import { useCategorias } from './hooks/useCategorias'
 import { useToast } from '@/shared/contexts/useToast'
@@ -84,25 +86,28 @@ export function Categorias() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Categorías</h1>
-          <p className="text-[var(--color-text-secondary)] mt-1">Organiza tus movimientos</p>
-        </div>
-        <button className="btn btn-primary" onClick={openCreateModal}>
-          <Plus size={18} /> Nueva Categoría
-        </button>
-      </div>
+      <PageHeader
+        title="Categorías"
+        subtitle="Organiza tus movimientos"
+        actions={
+          <button className="btn btn-primary" onClick={openCreateModal}>
+            <Plus size={18} /> Nueva Categoría
+          </button>
+        }
+      />
 
       <div className="card">
         <div className="card-body p-0">
           {categorias.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-[var(--color-text-muted)]">No hay categorías registradas</p>
-              <button className="btn btn-primary mt-4" onClick={openCreateModal}>
-                <Plus size={18} /> Crear la primera
-              </button>
-            </div>
+            <EmptyState
+              icon={FolderOpen}
+              message="No hay categorías registradas"
+              action={
+                <button className="btn btn-primary" onClick={openCreateModal}>
+                  <Plus size={18} /> Crear la primera
+                </button>
+              }
+            />
           ) : (
             <div className="table-container">
               <table className="table">

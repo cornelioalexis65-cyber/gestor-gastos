@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Plus, Edit, Trash2, Loader2, ChevronLeft, ChevronRight, X, CreditCard } from 'lucide-react'
-import { format } from 'date-fns'
+import { Plus, Edit, Trash2, Loader2, X, CreditCard, Receipt } from 'lucide-react'
 import { Modal } from '@/shared/components/Modal'
+import { PageHeader } from '@/shared/components/PageHeader'
+import { EmptyState } from '@/shared/components/EmptyState'
+import { Pagination } from '@/shared/components/Pagination'
+import { formatCurrency, formatDate } from '@/shared/utils/format'
 import { GastoForm } from './components/GastoForm'
 import { useGastos } from './hooks/useGastos'
 import { useCategorias } from '@/features/categorias/hooks/useCategorias'
@@ -114,15 +117,15 @@ export function Gastos() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">Gastos</h1>
-          <p className="text-[var(--color-text-secondary)] mt-1">Gestiona tus gastos</p>
-        </div>
-        <button className="btn btn-primary" onClick={openCreateModal} disabled={catLoading || tarjetasLoading}>
-          <Plus size={18} /> Nuevo Gasto
-        </button>
-      </div>
+      <PageHeader
+        title="Gastos"
+        subtitle="Gestiona tus gastos"
+        actions={
+          <button className="btn btn-primary" onClick={openCreateModal} disabled={catLoading || tarjetasLoading}>
+            <Plus size={18} /> Nuevo Gasto
+          </button>
+        }
+      />
 
       <div className="card">
         <div className="card-body p-0">
@@ -211,16 +214,17 @@ export function Gastos() {
           </div>
 
           {gastos.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-[var(--color-text-muted)]">
-                {hasActiveFilters ? 'No hay gastos con los filtros actuales' : 'No hay gastos registrados'}
-              </p>
-              {!hasActiveFilters && (
-                <button className="btn btn-primary mt-4" onClick={openCreateModal} disabled={catLoading || tarjetasLoading}>
-                  <Plus size={18} /> Crear el primero
-                </button>
-              )}
-            </div>
+            <EmptyState
+              icon={Receipt}
+              message={hasActiveFilters ? 'No hay gastos con los filtros actuales' : 'No hay gastos registrados'}
+              action={
+                !hasActiveFilters && (
+                  <button className="btn btn-primary" onClick={openCreateModal} disabled={catLoading || tarjetasLoading}>
+                    <Plus size={18} /> Crear el primero
+                  </button>
+                )
+              }
+            />
           ) : (
             <>
               <div className="table-container">
@@ -239,7 +243,7 @@ export function Gastos() {
                   <tbody>
                     {gastos.map(gasto => (
                       <tr key={gasto.id}>
-                        <td className="font-mono text-sm">{format(new Date(gasto.fecha), 'dd/MM/yyyy')}</td>
+                        <td className="font-mono text-sm">{formatDate(gasto.fecha)}</td>
                         <td className="font-medium">{gasto.descripcion}</td>
                         <td>
                           <span
@@ -270,7 +274,7 @@ export function Gastos() {
                           )}
                         </td>
                         <td className="text-right font-mono text-[var(--color-danger)]">
-                          -${Number(gasto.monto).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          -{formatCurrency(gasto.monto)}
                         </td>
                         <td>
                           <div className="flex items-center gap-1">
@@ -296,31 +300,12 @@ export function Gastos() {
                 </table>
               </div>
 
-              {pagination.totalPages > 1 && (
-                <div className="p-4 border-t border-[var(--color-border)] flex items-center justify-between">
-                  <p className="text-sm text-[var(--color-text-secondary)]">
-                    Página {pagination.page} de {pagination.totalPages} ({pagination.total} total)
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <button
-                      className="btn btn-ghost btn-sm p-1.5"
-                      onClick={() => goToPage(pagination.page - 1)}
-                      disabled={pagination.page === 1}
-                      aria-label="Página anterior"
-                    >
-                      <ChevronLeft size={16} />
-                    </button>
-                    <button
-                      className="btn btn-ghost btn-sm p-1.5"
-                      onClick={() => goToPage(pagination.page + 1)}
-                      disabled={pagination.page === pagination.totalPages}
-                      aria-label="Página siguiente"
-                    >
-                      <ChevronRight size={16} />
-                    </button>
-                  </div>
-                </div>
-              )}
+              <Pagination
+                page={pagination.page}
+                totalPages={pagination.totalPages}
+                total={pagination.total}
+                onPageChange={goToPage}
+              />
             </>
           )}
         </div>
